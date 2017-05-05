@@ -1,0 +1,23 @@
+{
+    "name": "code-editor-in-lms",
+    "version": "1.0.0",
+    "description": "a bookmarklet that creates a code editor from a given text box",
+    "main": "loadDependances.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "makeTest": "node_modules/.bin/boomlet.cmd codeThatGoesInBookmarklet.js \"Editor Test\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/byuitechops/code-editor-in-lms.git"
+    },
+    "author": "Joshua McKinney",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/byuitechops/code-editor-in-lms/issues"
+    },
+    "homepage": "https://github.com/byuitechops/code-editor-in-lms#readme",
+    "devDependencies": {
+        "boomlet": "^1.0.0"
+    }
+}
