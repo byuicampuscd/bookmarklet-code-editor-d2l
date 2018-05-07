@@ -5,7 +5,10 @@
     "main": "loadDependances.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "makeTest": "node_modules/.bin/boomlet.cmd codeThatGoesInBookmarklet.js \"Editor Test\""
+        "build" : "node build.js",
+        "makeTestBookmarklet": "node_modules/.bin/boomlet.cmd codeThatGoesInBookmarklet.js \"Test Bookmarklet\"",
+        "updateImportMe": "echo \"Error: this functionality is not built yet\" && exit 1",
+        "start" : "live-server"
     },
     "repository": {
         "type": "git",
@@ -16,7 +19,12 @@
     },
     "homepage": "https://github.com/byuitechops/code-editor-in-lms#readme",
     "devDependencies": {
-        "boomlet": "^1.0.0"
+        "boomlet": "^1.0.0",
+        "live-server" : "live-server"
+    },
+    "byui" : {
+        "prodLoad" : "https://content.byui.edu/integ/gen/7b0deacf-7b0f-477d-85e0-aaa75dcecb08/0/loadDependances.js",
+        "prodMain" : "https://content.byui.edu/integ/gen/7b0deacf-7b0f-477d-85e0-aaa75dcecb08/0/main.js"
     },
     "author": "Joshua McKinney",
     "license": "MIT"
