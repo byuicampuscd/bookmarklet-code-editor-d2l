@@ -5,7 +5,6 @@ function jaLoadBookmarkletScripts(scripts, callbackDone) {
     "use strict";
 
     function loadScript(url, callback) {
-        i++;
 
         function scriptIsNotLoaded(url) {
             return document.querySelectorAll('script[src="' + url + '"]').length === 0;
@@ -49,12 +48,15 @@ function jaLoadBookmarkletScripts(scripts, callbackDone) {
 
 function jmLoadScriptsD2lAceEditor() {
     "use strict";
+
+    var main = "http://127.0.0.1:8080/main.js";
+
     var scripts = [
         "https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js",
         "https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.4/beautify.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.4/beautify-css.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.4/beautify-html.min.js",
-        "https://content.byui.edu/integ/gen/7b0deacf-7b0f-477d-85e0-aaa75dcecb08/0/main.js"
+        main
     ];
 
     jaLoadBookmarkletScripts(scripts, function () {

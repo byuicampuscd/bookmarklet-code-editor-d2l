@@ -21,8 +21,9 @@ function jmLoadScript(scriptURL, callback) {
     }
 }
 
+var loadDependencies = "http://127.0.0.1:8080/loadDependances.js";
 
-jmLoadScript("https://content.byui.edu/integ/gen/7b0deacf-7b0f-477d-85e0-aaa75dcecb08/0/loadDependances.js", function () {
+jmLoadScript(loadDependencies, function () {
     "use strict";
     jmLoadScriptsD2lAceEditor()
 });
