@@ -345,6 +345,37 @@ function runEditor({
     openEditor = true;
 
     // Set the options
+    // Starting Options for the Editor
+    var startingOptions = {
+        'animatedScroll': false,
+        'behaviorsEnabled': true,
+        'displayIndentGuides': true,
+        'dragDelay': 0,
+        'fadeFoldWidgets': false,
+        'fontSize': 14,
+        'highlightActiveLine': true,
+        'highlightGutterLine': true,
+        'highlightSelectedWord': true,
+        'hScrollBarAlwaysVisible': false,
+        'keyboardHandler': null,
+        'mode': 'ace/mode/html',
+        'newLineMode': 'auto',
+        'overwrite': false,
+        'printMarginColumn': 80,
+        'readOnly': false,
+        'scrollSpeed': 2,
+        'showFoldWidgets': true,
+        'showGutter': true,
+        'showInvisibles': false,
+        'showPrintMargin': false,
+        'tabSize': 4,
+        'theme': 'ace/theme/iplastic',
+        'useSoftTabs': true,
+        'useWorker': true,
+        'wrap': 'off',
+        'vScrollBarAlwaysVisible': false,
+        'wrapBehaviorsEnabled': true
+    };
     options = JSON.parse(localStorage.getItem(localstorageKey)) || startingOptions;
     editor.setOptions(options);
 
@@ -399,36 +430,4 @@ function runEditor({
             extra_liners: []
         });
     }
-
-    // Starting Options for the Editor
-    var startingOptions = {
-        'animatedScroll': false,
-        'behaviorsEnabled': true,
-        'displayIndentGuides': true,
-        'dragDelay': 0,
-        'fadeFoldWidgets': false,
-        'fontSize': 14,
-        'highlightActiveLine': true,
-        'highlightGutterLine': true,
-        'highlightSelectedWord': true,
-        'hScrollBarAlwaysVisible': false,
-        'keyboardHandler': null,
-        'mode': 'ace/mode/html',
-        'newLineMode': 'auto',
-        'overwrite': false,
-        'printMarginColumn': 80,
-        'readOnly': false,
-        'scrollSpeed': 2,
-        'showFoldWidgets': true,
-        'showGutter': true,
-        'showInvisibles': false,
-        'showPrintMargin': false,
-        'tabSize': 4,
-        'theme': 'ace/theme/iplastic',
-        'useSoftTabs': true,
-        'useWorker': true,
-        'wrap': 'off',
-        'vScrollBarAlwaysVisible': false,
-        'wrapBehaviorsEnabled': true
-    };
 }
