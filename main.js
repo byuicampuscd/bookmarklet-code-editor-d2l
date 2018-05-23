@@ -40,11 +40,11 @@ function loadEditor() {
                 .then(d2lGetHTML)
                 .then(runEditor)
                 .catch(err => {
-                    if (err !== 'The editor has stopped working. Would you like to submit a ticket?') {
-                        console.log(err);
-                    } else if (confirm(err)) {
-                        // Link to google form to submit ticket
+                    console.log(err);
+                    if (confirm('The editor has encountered an error. Would you like to submit a ticket? (This will take you to another page)')) {
+                        window.location = 'https://docs.google.com/forms/d/e/1FAIpQLSfJQX_njx43MMLkatwn-MvPUmJfB6IHnzIyVwdkK1GaqtQ7Lw/viewform?usp=sf_link';
                     }
+                    return;
                 });
         } else {
             console.log('The editor is already open!');
@@ -167,6 +167,9 @@ function loadEditor() {
                 .then(runEditor)
                 .catch(err => {
                     console.log(err);
+                    if (confirm('The editor has encountered an error. Would you like to submit a ticket? (This will take you to another page)')) {
+                        window.location = 'https://docs.google.com/forms/d/e/1FAIpQLSfJQX_njx43MMLkatwn-MvPUmJfB6IHnzIyVwdkK1GaqtQ7Lw/viewform?usp=sf_link';
+                    }
                     return;
                 });
         } else {
@@ -228,7 +231,6 @@ function loadEditor() {
                         }
                     } else {
                         // Just grab the first question's html
-
                         // Get the button to click
                         button = Array.from(document.querySelectorAll('a')).filter((item) => item.innerText.trim() === 'HTML Editor')[0];
                         // Check if the user has already clicked the HTML Editor button
