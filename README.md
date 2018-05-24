@@ -32,6 +32,6 @@ npm start
 importMe.html needs to have the contents of `prod/codeThatGoesInBookmarklet.js` put in (this should be automated during build but is not currently)
 
 ## Flow Chart
-![Code Editor Flow Chart](LMS Code Editor.png)
+![Code Editor Flow Chart](https://github.com/byuitechops/code-editor-in-lms/blob/master/LMS%20Code%20Editor.png?raw=true)
 
 
