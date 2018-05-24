@@ -41,7 +41,7 @@ function loadEditor() {
                 .then(runEditor)
                 .catch(err => {
                     console.log(err);
-                    if (confirm('The editor has encountered an error. Would you like to submit a ticket? (This will take you to another page)')) {
+                    if (confirm('The editor has encountered an error or the current page is not an edit page. Would you like to submit a ticket? (This will take you to another page)')) {
                         window.location = 'https://docs.google.com/forms/d/e/1FAIpQLSfJQX_njx43MMLkatwn-MvPUmJfB6IHnzIyVwdkK1GaqtQ7Lw/viewform?usp=sf_link';
                     }
                     return;
@@ -167,7 +167,7 @@ function loadEditor() {
                 .then(runEditor)
                 .catch(err => {
                     console.log(err);
-                    if (confirm('The editor has encountered an error. Would you like to submit a ticket? (This will take you to another page)')) {
+                    if (confirm('The editor has encountered an error or the current page is not an edit page. Would you like to submit a ticket? (This will take you to another page)')) {
                         window.location = 'https://docs.google.com/forms/d/e/1FAIpQLSfJQX_njx43MMLkatwn-MvPUmJfB6IHnzIyVwdkK1GaqtQ7Lw/viewform?usp=sf_link';
                     }
                     return;
@@ -345,12 +345,13 @@ function runEditor({
     // Make the editor, place it in the editorDiv
     editor = ace.edit(editorDiv);
     openEditor = true;
+    console.log('Editor Opened');
 
     // Set the options
     // Starting Options for the Editor
     var startingOptions = {
         'animatedScroll': false,
-        'behaviorsEnabled': true,
+        'behavioursEnabled': true,
         'displayIndentGuides': true,
         'dragDelay': 0,
         'fadeFoldWidgets': false,
@@ -376,7 +377,7 @@ function runEditor({
         'useWorker': true,
         'wrap': 'off',
         'vScrollBarAlwaysVisible': false,
-        'wrapBehaviorsEnabled': true
+        'wrapBehavioursEnabled': true
     };
     options = JSON.parse(localStorage.getItem(localstorageKey)) || startingOptions;
     editor.setOptions(options);
@@ -390,7 +391,7 @@ function runEditor({
     // When you click the beautifyHTML button, clean the code.
     document.getElementsByClassName('beautifyEditor')[0].onclick = () => {
         editor.getSession().setValue(makePretty(editor.getSession().getValue()));
-        console.log('Beautified! Don\'t I look pretty?');
+        console.log('Code Beautified');
     };
 
     // When you click the close button, save the user's settings, put the code back in, and close the editor.
