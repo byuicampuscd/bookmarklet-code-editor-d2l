@@ -1,6 +1,21 @@
 // Is the editor open? Starts false, changes to true when open
 var openEditor = false;
 
+/******************************************************
+ *                  loadEditor()
+ *
+ * Arguments: None
+ * 
+ * Description: The loadEditor() function is the "main"
+ * function for the editor. It contains all of the
+ * functions/code required to load the editor in both
+ * D2L and Canvas. The only code this function runs is 
+ * the switch statement below to determine the user's
+ * location and run the correct driver function.
+ * To add more driver functions add more cases.
+ * 
+ * Return Type: Void
+ ******************************************************/
 function loadEditor() {
     'use strict';
 
@@ -33,6 +48,22 @@ function loadEditor() {
 
     // D2L Functions
 
+    /******************************************************
+     *                    d2lDriver()
+     *
+     * Arguments: None
+     * 
+     * Description: The d2lDriver() function is the driver
+     * for the editor to work properly in D2L. The function
+     * uses a promise chain to handle any async operations
+     * and/or errors. The function first checks to see if
+     * the editor is already open. If it is, it returns.
+     * If the editor encounters an error, the function
+     * catches the error and prompts the user to submit
+     * a ticket.
+     * 
+     * Return Type: Void
+     ******************************************************/
     function d2lDriver() {
         // If the editor is already open, don't do anything
         if (!openEditor) {
@@ -53,6 +84,21 @@ function loadEditor() {
 
     }
 
+    /******************************************************
+     *                  d2lClickButton()
+     * 
+     * Arguments: None
+     * 
+     * Description: The d2lClickButton() function is in
+     * charge of finding and clicking the HTML edit button.
+     * There are two cases where the clicking of the button
+     * occurs. One is inside of the normal content editor.
+     * The other is inside of manage files. If the editor
+     * can't find the button, it throws an error. If the
+     * editor has already.
+     * 
+     * Return Type: Promise
+     ******************************************************/
     function d2lClickButton() {
         return new Promise((resolve, reject) => {
             // Find out if the user is inside of manage files or content
@@ -101,6 +147,23 @@ function loadEditor() {
         });
     }
 
+    /******************************************************
+     *                  d2lGetHTML()
+     *
+     * Arguments: None
+     * 
+     * Description: The d2lGetHTML() function gets the HTML
+     * from the html editor text area. This function has
+     * to wait for an iframe to load before it is able to
+     * get the HTML. This function also has to check if
+     * the user is inside of the normal content editor or
+     * if the user is inside of manage files. Once the 
+     * iframe loads, Locate the HTML and then grab it.
+     * Return an object containing the HTML, the place 
+     * to put the HTML, and the place to put it back. 
+     * 
+     * Return Type: Promise(JS Object)
+     ******************************************************/
     function d2lGetHTML() {
         return new Promise((resolve, reject) => {
             var htmlString,
@@ -158,7 +221,21 @@ function loadEditor() {
 
     // Canvas Functions
 
-    // Calls all the necessary Canvas Functions
+    /******************************************************
+     *                 canvasDriver()
+     * Arguments: None
+     * 
+     * Description: The canvasDriver() function is the 
+     * driver for the editor to work properly in Canvas. 
+     * The function uses a promise chain to handle any 
+     * async operations and/or errors. The function first 
+     * checks to see if the editor is already open. If it 
+     * is, it returns. If the editor encounters an error, 
+     * the function catches the error and prompts the user 
+     * to submit a ticket.
+     * 
+     * Return Type: Void
+     ******************************************************/
     function canvasDriver() {
         // If the editor is already open, don't do anything
         if (!openEditor) {
@@ -178,11 +255,34 @@ function loadEditor() {
         }
     }
 
+    /******************************************************
+     *                 canvasClickButton()
+     * 
+     * Arguments: None
+     * 
+     * Description: The canvasClickButton() function clicks
+     * the edit HTML button in Canvas. If the user is not 
+     * in a quiz, the function finds and clicks the button. 
+     * 
+     * If the user is located in quizzes the function 
+     * checks whether the user is editing the quiz 
+     * description or a quiz question. If the user is 
+     * editing quiz questions the function will default to
+     * the first open question and click its Edit HTML 
+     * button, unless the user has clicked inside a 
+     * question. If the user has clicked inside a question 
+     * the function clicks the edit HTML button for that 
+     * question. If the editor is editing the quiz 
+     * description it clicks the edit HTML button for the 
+     * quiz description.
+     * 
+     * Return Type: Promise
+     ******************************************************/
     function canvasClickButton() {
         return new Promise((resolve, reject) => {
             var button;
             // Check if the user is editing a quiz
-            if (!url.includes('quizzes')) {
+            if (!url.includes('quizzes') && !url.includes('question_banks')) {
                 // Check if the user has already clicked the HTML Editor button
                 // Get the Button to click 
                 button = Array.from(document.querySelectorAll('a')).filter((item) => item.innerText.trim() === 'HTML Editor')[0];
@@ -211,7 +311,7 @@ function loadEditor() {
                         // HTML Editor button already clicked
                         resolve();
                     }
-                } else if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'questions_tab') {
+                } else if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'questions_tab' || url.includes('question_banks')) {
                     // User is editing Quiz Questions
 
                     // Check if the user has a question in focus
@@ -248,13 +348,23 @@ function loadEditor() {
         });
     }
 
+    /******************************************************
+     *                  canvasGetHTML()
+     *
+     * Arguments: None
+     * 
+     * Description: The canvasGetHTML() function gets the
+     * html from the Edit HTML text area.
+     * 
+     * Return Type: Promise
+     ******************************************************/
     function canvasGetHTML() {
         return new Promise((resolve, reject) => {
             var htmlString,
                 whereToInjectCode,
                 placeToPutBack;
             // Check if the user is editing a quiz
-            if (!url.includes('quizzes')) {
+            if (!url.includes('quizzes') && !url.includes('question_banks')) {
                 htmlString = document.querySelectorAll('textarea[id][class]')[0].value;
                 whereToInjectCode = 'body';
                 placeToPutBack = document.querySelectorAll('textarea[id][class]')[0];
@@ -266,7 +376,7 @@ function loadEditor() {
                     htmlString = document.getElementById('quiz_description').value;
                     whereToInjectCode = 'body';
                     placeToPutBack = document.getElementById('quiz_description');
-                } else if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'questions_tab') {
+                } else if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'questions_tab' || url.includes('question_banks')) {
                     // User is editing Quiz Questions
 
                     // Check if the user has a question in focus
@@ -300,7 +410,14 @@ function loadEditor() {
 
 /*****************************************************************************************************************************************/
 
-// Creates, maintains, and handles the editor
+/******************************************************
+ *                  runEditor()
+ * Arguments: None
+ * 
+ * Description: 
+ * 
+ * Return Type: Void
+ ******************************************************/
 function runEditor({
     htmlString,
     whereToInjectCode,
