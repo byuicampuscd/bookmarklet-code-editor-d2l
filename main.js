@@ -354,9 +354,15 @@ function loadEditor() {
      * Arguments: None
      * 
      * Description: The canvasGetHTML() function gets the
-     * html from the Edit HTML text area.
+     * html from the Edit HTML text area. If the user is
+     * editing quiz questions the function defaults to the
+     * first quiz question unless the user is clicked
+     * inside a question. The function returns an object
+     * containing three things: The HTML string, where
+     * to inject the editor, and where to put the code back
+     * once the user is dont editing.
      * 
-     * Return Type: Promise
+     * Return Type: Promise(JS Object)
      ******************************************************/
     function canvasGetHTML() {
         return new Promise((resolve, reject) => {
@@ -412,9 +418,26 @@ function loadEditor() {
 
 /******************************************************
  *                  runEditor()
- * Arguments: None
+ * Arguments: JS Object
  * 
- * Description: 
+ * Description: The runEditor() function is in charge
+ * of putting the editor on the screen correctly. The
+ * function takes in an HTML string, the place to put
+ * the editor, and the place to put the edited code
+ * back. The function first creates the HTML code for
+ * the footer and the div and styles for the editor.
+ * The function then puts the footer's HTML into the
+ * footerDiv. The function then appends both the
+ * editor and footer divs to the wrapperDiv. The
+ * function then makes the editor, loads the default
+ * or user settings, and beautifies the code.
+ * 
+ * The footer contains buttons that allow the user to
+ * close the editor, reset the settings, wrap the text,
+ * and change the editor's settings. When the user
+ * closes the editor the current settings are saved to
+ * local storage and then the editor puts the code back
+ * into the textbox.
  * 
  * Return Type: Void
  ******************************************************/
