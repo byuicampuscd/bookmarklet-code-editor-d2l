@@ -24,6 +24,7 @@ function loadEditor() {
     // Get the url of the current webpage.
     var url = window.location.href;
 
+    // To add another location, edit the getLocation function to return the correct value. Then add another case statement
     switch (getLocation()) {
     case 'd2l':
         // Calls d2l functions
@@ -32,6 +33,9 @@ function loadEditor() {
     case 'canvas':
         // Call canvas functions
         canvasDriver();
+        break;
+    default:
+        console.log('The editor currently doesn\'t support this domain');
         break;
     }
 
@@ -72,7 +76,7 @@ function loadEditor() {
                 .then(runEditor)
                 .catch(err => {
                     console.log(err);
-                    if (confirm('The editor has encountered an error or the current page is not an edit page. Would you like to submit a ticket? (This will take you to another page)')) {
+                    if (confirm('The editor has experienced a problem or the current page is not an edit page. Would you like to submit a ticket? (This will take you to another page)')) {
                         window.location = 'https://docs.google.com/forms/d/e/1FAIpQLSfJQX_njx43MMLkatwn-MvPUmJfB6IHnzIyVwdkK1GaqtQ7Lw/viewform?usp=sf_link';
                     }
                     return;
@@ -81,7 +85,6 @@ function loadEditor() {
             console.log('The editor is already open!');
             return;
         }
-
     }
 
     /******************************************************
@@ -119,30 +122,33 @@ function loadEditor() {
                         resolve();
                     }
                 } catch (err) {
-                    reject('The editor has stopped working. Would you like to submit a ticket?');
+                    reject(err);
                 }
-
             } else if (title.includes('Manage Files')) {
-                // User is inside of Manage Files
-                // Check if an edit file window is active
-                if (document.getElementsByClassName('ddial_o2').length > 0) {
-                    if (!document.getElementsByClassName('d2l-dialog').length > 0) {
-                        // Find the iframe contating the text editor.
-                        [].forEach.call(document.querySelectorAll('iframe'), iframe => {
-                            // Click the button
-                            resolve(iframe.contentWindow.document.body.querySelector('.d2l-htmleditor-button[title="HTML Source Editor"]').dispatchEvent(new MouseEvent('click', {
-                                'view': window,
-                                'bubbles': false,
-                                'cancelable': true
-                            })));
-                        });
-                    } else {
-                        // The button has already been clicked
-                        resolve();
+                try {
+                    // User is inside of Manage Files
+                    // Check if an edit file window is active
+                    if (document.getElementsByClassName('ddial_o2').length > 0) {
+                        if (!document.getElementsByClassName('d2l-dialog').length > 0) {
+                            // Find the iframe contating the text editor.
+                            [].forEach.call(document.querySelectorAll('iframe'), iframe => {
+                                // Click the button
+                                resolve(iframe.contentWindow.document.body.querySelector('.d2l-htmleditor-button[title="HTML Source Editor"]').dispatchEvent(new MouseEvent('click', {
+                                    'view': window,
+                                    'bubbles': false,
+                                    'cancelable': true
+                                })));
+                            });
+                        } else {
+                            // The button has already been clicked
+                            resolve();
+                        }
                     }
-                } else {
-                    reject('There isn\'t an Edit File window active!');
+                } catch (err) {
+                    reject(err);
                 }
+            } else {
+                reject('There isn\'t an Edit File window active!');
             }
         });
     }
@@ -171,28 +177,8 @@ function loadEditor() {
                 placeToPutBack;
             // Find out if the user is inside of manage files or content
             if (!title.includes('Manage Files')) {
-                // User is inside of content
-                // If the iFrame has finished loading, get the text and the textarea's DOM object.
-                if (document.querySelectorAll('.d2l-dialog-inner iframe')[0] &&
-                    document.querySelectorAll('.d2l-dialog-inner iframe')[0].contentDocument.querySelectorAll('textarea')[0]) {
-                    htmlString = document.querySelectorAll('.d2l-dialog-inner iframe')[0].contentDocument.querySelectorAll('textarea')[0].value;
-                    whereToInjectCode = 'body';
-                    placeToPutBack = document.querySelectorAll('.d2l-dialog-inner iframe')[0].contentDocument.querySelectorAll('textarea')[0];
-                    resolve({
-                        htmlString,
-                        whereToInjectCode,
-                        placeToPutBack
-                    });
-                } else {
-                    // The iFrame still hasn't loaded, call d2lGetHTML until it has loaded every 100 milliseconds.
-                    setTimeout(() => {
-                        d2lGetHTML().then(resolve);
-                    }, 100);
-                }
-            } else if (title.includes('Manage Files')) {
-                // User is inside of Manage Files
-                // Find the iframe containing the text editor
-                [].forEach.call(document.querySelectorAll('iframe'), () => {
+                try {
+                    // User is inside of content
                     // If the iFrame has finished loading, get the text and the textarea's DOM object.
                     if (document.querySelectorAll('.d2l-dialog-inner iframe')[0] &&
                         document.querySelectorAll('.d2l-dialog-inner iframe')[0].contentDocument.querySelectorAll('textarea')[0]) {
@@ -210,7 +196,35 @@ function loadEditor() {
                             d2lGetHTML().then(resolve);
                         }, 100);
                     }
-                });
+                } catch (err) {
+                    reject(err);
+                }
+            } else if (title.includes('Manage Files')) {
+                try {
+                    // User is inside of Manage Files
+                    // Find the iframe containing the text editor
+                    [].forEach.call(document.querySelectorAll('iframe'), () => {
+                        // If the iFrame has finished loading, get the text and the textarea's DOM object.
+                        if (document.querySelectorAll('.d2l-dialog-inner iframe')[0] &&
+                            document.querySelectorAll('.d2l-dialog-inner iframe')[0].contentDocument.querySelectorAll('textarea')[0]) {
+                            htmlString = document.querySelectorAll('.d2l-dialog-inner iframe')[0].contentDocument.querySelectorAll('textarea')[0].value;
+                            whereToInjectCode = 'body';
+                            placeToPutBack = document.querySelectorAll('.d2l-dialog-inner iframe')[0].contentDocument.querySelectorAll('textarea')[0];
+                            resolve({
+                                htmlString,
+                                whereToInjectCode,
+                                placeToPutBack
+                            });
+                        } else {
+                            // The iFrame still hasn't loaded, call d2lGetHTML until it has loaded every 100 milliseconds.
+                            setTimeout(() => {
+                                d2lGetHTML().then(resolve);
+                            }, 100);
+                        }
+                    });
+                } catch (err) {
+                    reject(err);
+                }
             }
         });
     }
@@ -244,7 +258,7 @@ function loadEditor() {
                 .then(runEditor)
                 .catch(err => {
                     console.log(err);
-                    if (confirm('The editor has encountered an error or the current page is not an edit page. Would you like to submit a ticket? (This will take you to another page)')) {
+                    if (confirm('The editor has experienced a problem or the current page is not an edit page. Would you like to submit a ticket? (This will take you to another page)')) {
                         window.location = 'https://docs.google.com/forms/d/e/1FAIpQLSfJQX_njx43MMLkatwn-MvPUmJfB6IHnzIyVwdkK1GaqtQ7Lw/viewform?usp=sf_link';
                     }
                     return;
@@ -283,26 +297,10 @@ function loadEditor() {
             var button;
             // Check if the user is editing a quiz
             if (!url.includes('quizzes') && !url.includes('question_banks')) {
-                // Check if the user has already clicked the HTML Editor button
-                // Get the Button to click 
-                button = Array.from(document.querySelectorAll('a')).filter((item) => item.innerText.trim() === 'HTML Editor')[0];
-                if (button.style.display !== 'none') {
-                    // Click the button 
-                    button.click();
-                    resolve();
-                } else {
-                    // HTML Editor button already clicked
-                    resolve();
-                }
-            } else {
-                // The user is editing Quizzes
-
-                // Find out if the user is editing the quiz description or quiz questions
-                if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'options_tab') {
-                    // User is editing the Quiz Description
+                try {
+                    // Check if the user has already clicked the HTML Editor button
                     // Get the Button to click 
                     button = Array.from(document.querySelectorAll('a')).filter((item) => item.innerText.trim() === 'HTML Editor')[0];
-                    // Check if the user has already clicked the HTML Editor button
                     if (button.style.display !== 'none') {
                         // Click the button 
                         button.click();
@@ -311,27 +309,16 @@ function loadEditor() {
                         // HTML Editor button already clicked
                         resolve();
                     }
-                } else if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'questions_tab' || url.includes('question_banks')) {
-                    // User is editing Quiz Questions
-
-                    // Check if the user has a question in focus
-                    if (document.activeElement.tagName === 'IFRAME' || document.activeElement.tagName === 'TEXTAREA') {
-                        // The following line of code needs to be improved. It can easily break.
-                        var parent = document.activeElement.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('toggle_question_content_views_link');
-                        // check if the user has already clicked the HTML editor button
-                        if (parent[1].style.display !== 'inline') {
-                            parent[1].click();
-                            // Now set the html editor's display to 'none', and the rich text editor button to 'block'
-                            parent[0].style.display = 'none';
-                            parent[1].style.display = 'inline';
-                            resolve();
-                        } else {
-                            // HTML Editor button already clicked
-                            resolve();
-                        }
-                    } else {
-                        // Just grab the first question's html
-                        // Get the button to click
+                } catch (err) {
+                    reject(err);
+                }
+            } else {
+                try {
+                    // The user is editing Quizzes
+                    // Find out if the user is editing the quiz description or quiz questions
+                    if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'options_tab') {
+                        // User is editing the Quiz Description
+                        // Get the Button to click 
                         button = Array.from(document.querySelectorAll('a')).filter((item) => item.innerText.trim() === 'HTML Editor')[0];
                         // Check if the user has already clicked the HTML Editor button
                         if (button.style.display !== 'none') {
@@ -342,7 +329,41 @@ function loadEditor() {
                             // HTML Editor button already clicked
                             resolve();
                         }
+                    } else if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'questions_tab' || url.includes('question_banks')) {
+                        // User is editing Quiz Questions
+
+                        // Check if the user has a question in focus
+                        if (document.activeElement.tagName === 'IFRAME' || document.activeElement.tagName === 'TEXTAREA') {
+                            // The following line of code needs to be improved. It can easily break.
+                            var parent = document.activeElement.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('toggle_question_content_views_link');
+                            // check if the user has already clicked the HTML editor button
+                            if (parent[1].style.display !== 'inline') {
+                                parent[1].click();
+                                // Now set the html editor's display to 'none', and the rich text editor button to 'block'
+                                parent[0].style.display = 'none';
+                                parent[1].style.display = 'inline';
+                                resolve();
+                            } else {
+                                // HTML Editor button already clicked
+                                resolve();
+                            }
+                        } else {
+                            // Just grab the first question's html
+                            // Get the button to click
+                            button = Array.from(document.querySelectorAll('a')).filter((item) => item.innerText.trim() === 'HTML Editor')[0];
+                            // Check if the user has already clicked the HTML Editor button
+                            if (button.style.display !== 'none') {
+                                // Click the button 
+                                button.click();
+                                resolve();
+                            } else {
+                                // HTML Editor button already clicked
+                                resolve();
+                            }
+                        }
                     }
+                } catch (err) {
+                    reject(err);
                 }
             }
         });
@@ -366,49 +387,53 @@ function loadEditor() {
      ******************************************************/
     function canvasGetHTML() {
         return new Promise((resolve, reject) => {
-            var htmlString,
-                whereToInjectCode,
-                placeToPutBack;
-            // Check if the user is editing a quiz
-            if (!url.includes('quizzes') && !url.includes('question_banks')) {
-                htmlString = document.querySelectorAll('textarea[id][class]')[0].value;
-                whereToInjectCode = 'body';
-                placeToPutBack = document.querySelectorAll('textarea[id][class]')[0];
-            } else {
-                // The user is editing a Quiz
-                // check if the user is editing a quiz description or question
-                if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'options_tab') {
-                    // User is editing the Quiz Description
-                    htmlString = document.getElementById('quiz_description').value;
+            try {
+                var htmlString,
+                    whereToInjectCode,
+                    placeToPutBack;
+                // Check if the user is editing a quiz
+                if (!url.includes('quizzes') && !url.includes('question_banks')) {
+                    htmlString = document.querySelectorAll('textarea[id][class]')[0].value;
                     whereToInjectCode = 'body';
-                    placeToPutBack = document.getElementById('quiz_description');
-                } else if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'questions_tab' || url.includes('question_banks')) {
-                    // User is editing Quiz Questions
+                    placeToPutBack = document.querySelectorAll('textarea[id][class]')[0];
+                } else {
+                    // The user is editing a Quiz
+                    // check if the user is editing a quiz description or question
+                    if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'options_tab') {
+                        // User is editing the Quiz Description
+                        htmlString = document.getElementById('quiz_description').value;
+                        whereToInjectCode = 'body';
+                        placeToPutBack = document.getElementById('quiz_description');
+                    } else if (document.getElementsByClassName('ui-tabs-active ui-state-active')[0].getAttribute('aria-controls') === 'questions_tab' || url.includes('question_banks')) {
+                        // User is editing Quiz Questions
 
-                    // Check if the user has a question in focus
-                    if (document.activeElement.tagName === 'TEXTAREA') {
-                        // Get its HTML
-                        var currentElement = document.activeElement;
-                        htmlString = currentElement.value;
-                        whereToInjectCode = 'body';
-                        placeToPutBack = currentElement;
-                    } else {
-                        // Just get the first open question's HTML, then resolve
-                        var textAreas = Array.from(document.querySelectorAll('textarea'));
-                        var questions = textAreas.filter(textArea => {
-                            return textArea.id.includes('question_content_');
-                        });
-                        htmlString = questions[0].value;
-                        whereToInjectCode = 'body';
-                        placeToPutBack = questions[0];
+                        // Check if the user has a question in focus
+                        if (document.activeElement.tagName === 'TEXTAREA') {
+                            // Get its HTML
+                            var currentElement = document.activeElement;
+                            htmlString = currentElement.value;
+                            whereToInjectCode = 'body';
+                            placeToPutBack = currentElement;
+                        } else {
+                            // Just get the first open question's HTML, then resolve
+                            var textAreas = Array.from(document.querySelectorAll('textarea'));
+                            var questions = textAreas.filter(textArea => {
+                                return textArea.id.includes('question_content_');
+                            });
+                            htmlString = questions[0].value;
+                            whereToInjectCode = 'body';
+                            placeToPutBack = questions[0];
+                        }
                     }
                 }
+                resolve({
+                    htmlString,
+                    whereToInjectCode,
+                    placeToPutBack
+                });
+            } catch (err) {
+                reject(err);
             }
-            resolve({
-                htmlString,
-                whereToInjectCode,
-                placeToPutBack
-            });
         });
     }
     // End Canvas Functions
