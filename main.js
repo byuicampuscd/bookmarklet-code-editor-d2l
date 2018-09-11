@@ -296,7 +296,7 @@ function loadEditor() {
         return new Promise((resolve, reject) => {
             var button;
             // Check if the user is editing a quiz
-            if (!url.includes('quizzes') && !url.includes('question_banks')) {
+            if (!url.includes('/quizzes/') && !url.includes('/question_banks/')) {
                 try {
                     // Check if the user has already clicked the HTML Editor button
                     // Get the Button to click 
@@ -392,7 +392,7 @@ function loadEditor() {
                     whereToInjectCode,
                     placeToPutBack;
                 // Check if the user is editing a quiz
-                if (!url.includes('quizzes') && !url.includes('question_banks')) {
+                if (!url.includes('/quizzes/') && !url.includes('/question_banks/')) {
                     htmlString = document.querySelectorAll('textarea[id][class]')[0].value;
                     whereToInjectCode = 'body';
                     placeToPutBack = document.querySelectorAll('textarea[id][class]')[0];
